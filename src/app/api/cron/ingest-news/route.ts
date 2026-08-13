@@ -3,19 +3,16 @@ import { revalidatePath } from "next/cache";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isNewsApiConfigured } from "@/lib/news/finnhub";
 import { ingestNewsInto } from "@/lib/news/ingest";
+import { isAuthorizedCronRequest } from "@/lib/cron-auth";
 
-// Scheduled news refresh. Point a cron trigger (Vercel Cron, GitHub Actions,
-// any external scheduler) at this URL to keep news current automatically —
-// the admin "Fetch latest news" button calls the same underlying logic for
-// on-demand refreshes. Protected by CRON_SECRET so it can't be triggered by
-// anyone who finds the URL.
+// Scheduled news refresh. vercel.json triggers this hourly via Vercel Cron
+// (which auto-authenticates with the x-vercel-cron header); an external
+// scheduler can also call it with `Authorization: Bearer <CRON_SECRET>`.
+// The admin "Fetch latest news" button calls the same underlying logic for
+// on-demand refreshes.
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!isAuthorizedCronRequest(request.headers)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const sb = await getServerSupabase();
