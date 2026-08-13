@@ -75,10 +75,24 @@ follows · notifications`
 - **RLS**: everything is publicly readable; users may only write their own
   content; admins can moderate anything.
 
-## 📰 News source
+## 📰 Live news (Finnhub)
 
-News starts as clean seed data. The `news` table is structured so an RSS feed or
-a News API can be wired in later without any UI changes — just insert rows.
+News starts as clean seed data, but the app can pull **real articles with
+images** from [Finnhub](https://finnhub.io)'s free news API:
+
+1. Get a free API key at [finnhub.io/register](https://finnhub.io/register)
+   (no credit card).
+2. Add it to `.env.local`: `FINNHUB_API_KEY=your-key`.
+3. Restart the dev server, sign in as an admin, go to **/admin → News**, and
+   click **Fetch latest news**. New articles (title, summary, real image,
+   source, original link) are inserted straight into the `news` table —
+   duplicates are skipped by matching on the original article URL.
+
+Finnhub's free tier only categorizes **general → Macro**, **forex → FX**,
+**crypto → Crypto**, and **mergers / major US tickers → US Stocks**. Korea
+Stocks, Bonds and Commodities have no equivalent free, image-bearing source
+today, so those stay curated via seed data or the manual "Publish news" form
+in Admin.
 
 ## 🛠 Tech
 

@@ -8,6 +8,7 @@ import {
   adminDeleteComment,
   adminDeleteNews,
   adminDeletePost,
+  adminIngestNews,
 } from "@/app/actions";
 import {
   Comment,
@@ -69,47 +70,84 @@ export default function AdminDashboard({
 function NewsAdmin({ configured, news }: { configured: boolean; news: NewsItem[] }) {
   const [state, formAction, pending] = useActionState(adminCreateNews, {});
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      <div className="card p-5">
-        <h3 className="mb-4 font-semibold">Publish news</h3>
-        <form action={formAction} className="space-y-3">
-          <input name="title" required placeholder="Headline" className={inputCls} />
-          <textarea name="summary" required rows={2} placeholder="Summary" className={inputCls} />
-          <textarea name="content" rows={3} placeholder="Full content (optional)" className={inputCls} />
-          <div className="grid grid-cols-2 gap-3">
-            <input name="source" placeholder="Source (e.g. Reuters)" className={inputCls} />
-            <select name="market" defaultValue="us-stocks" className={inputCls}>
-              {MARKET_OPTS.map(([v, l]) => (
-                <option key={v} value={v}>{l}</option>
-              ))}
-            </select>
-          </div>
-          <input name="source_url" placeholder="Original link (https://…)" className={inputCls} />
-          <input name="image_url" placeholder="Image URL (optional)" className={inputCls} />
-          {state?.error && <p className="text-sm text-bear">{state.error}</p>}
-          {state?.ok && <p className="text-sm text-bull">Published.</p>}
-          <button disabled={pending} className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
-            {pending ? "Publishing…" : "Publish"}
-          </button>
-        </form>
-      </div>
+    <div>
+      <FetchLiveNewsButton configured={configured} />
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="card p-5">
+          <h3 className="mb-4 font-semibold">Publish news</h3>
+          <form action={formAction} className="space-y-3">
+            <input name="title" required placeholder="Headline" className={inputCls} />
+            <textarea name="summary" required rows={2} placeholder="Summary" className={inputCls} />
+            <textarea name="content" rows={3} placeholder="Full content (optional)" className={inputCls} />
+            <div className="grid grid-cols-2 gap-3">
+              <input name="source" placeholder="Source (e.g. Reuters)" className={inputCls} />
+              <select name="market" defaultValue="us-stocks" className={inputCls}>
+                {MARKET_OPTS.map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+            </div>
+            <input name="source_url" placeholder="Original link (https://…)" className={inputCls} />
+            <input name="image_url" placeholder="Image URL (optional)" className={inputCls} />
+            {state?.error && <p className="text-sm text-bear">{state.error}</p>}
+            {state?.ok && <p className="text-sm text-bull">Published.</p>}
+            <button disabled={pending} className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+              {pending ? "Publishing…" : "Publish"}
+            </button>
+          </form>
+        </div>
 
-      <div>
-        <h3 className="mb-3 font-semibold">All news ({news.length})</h3>
-        <div className="space-y-2">
-          {news.map((n) => (
-            <Row
-              key={n.id}
-              configured={configured}
-              onDelete={() => adminDeleteNews(n.id)}
-              href={`/news/${n.id}`}
-              badge={<MarketBadge market={n.market} />}
-              title={n.title}
-              meta={`${n.source} · ${formatDate(n.published_at)}`}
-            />
-          ))}
+        <div>
+          <h3 className="mb-3 font-semibold">All news ({news.length})</h3>
+          <div className="space-y-2">
+            {news.map((n) => (
+              <Row
+                key={n.id}
+                configured={configured}
+                onDelete={() => adminDeleteNews(n.id)}
+                href={`/news/${n.id}`}
+                badge={<MarketBadge market={n.market} />}
+                title={n.title}
+                meta={`${n.source} · ${formatDate(n.published_at)}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function FetchLiveNewsButton({ configured }: { configured: boolean }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
+  function onClick() {
+    start(async () => {
+      const res = await adminIngestNews();
+      if (res.error) setMsg({ text: res.error, ok: false });
+      else {
+        const n = res.inserted ?? 0;
+        setMsg({ text: `Fetched ${n} new article${n === 1 ? "" : "s"}.`, ok: true });
+        if (n > 0) router.refresh();
+      }
+    });
+  }
+
+  return (
+    <div className="mb-5 flex items-center gap-3">
+      <button
+        onClick={onClick}
+        disabled={pending || !configured}
+        className="rounded-lg border border-line px-4 py-2 text-sm font-semibold hover:border-accent/50 disabled:opacity-50"
+      >
+        {pending ? "Fetching…" : "Fetch latest news"}
+      </button>
+      {!configured && <span className="text-xs text-muted">Requires Supabase connection.</span>}
+      {msg && (
+        <span className={`text-sm ${msg.ok ? "text-bull" : "text-bear"}`}>{msg.text}</span>
+      )}
     </div>
   );
 }

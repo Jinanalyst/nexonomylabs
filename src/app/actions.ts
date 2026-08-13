@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { CommentParentType, MarketCategory, Sentiment } from "@/lib/types";
+import { fetchLiveNews, isNewsApiConfigured } from "@/lib/news/finnhub";
 
 const DEMO = {
   error:
@@ -237,6 +238,54 @@ export async function adminDeletePost(id: string): Promise<Result> {
   if (error) return { error: error.message };
   revalidatePath("/admin");
   return { ok: true };
+}
+
+export async function adminIngestNews(): Promise<Result & { inserted?: number }> {
+  const sb = await getServerSupabase();
+  if (!sb) return { error: "Connect Supabase to ingest live news (see README)." };
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
+  if (!user) return { error: "Please sign in." };
+  const { data: profile } = await sb
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "admin") return { error: "Admin only." };
+
+  if (!isNewsApiConfigured())
+    return {
+      error: "FINNHUB_API_KEY is not set. Add a free key to .env.local (see README).",
+    };
+
+  const articles = await fetchLiveNews();
+  if (!articles.length)
+    return { error: "No articles fetched — check the API key or try again shortly." };
+
+  const { data: existing } = await sb.from("news").select("source_url");
+  const existingUrls = new Set((existing ?? []).map((n) => n.source_url));
+  const fresh = articles.filter((a) => !existingUrls.has(a.source_url));
+
+  if (!fresh.length) return { ok: true, inserted: 0 };
+
+  const { error } = await sb.from("news").insert(
+    fresh.map((a) => ({
+      title: a.title,
+      summary: a.summary,
+      image_url: a.image_url,
+      source: a.source,
+      source_url: a.source_url,
+      market: a.market,
+      published_at: a.published_at,
+    })),
+  );
+  if (error) return { error: error.message };
+
+  revalidatePath("/news");
+  revalidatePath("/admin");
+  revalidatePath("/");
+  return { ok: true, inserted: fresh.length };
 }
 
 export async function adminDeleteComment(id: string): Promise<Result> {
