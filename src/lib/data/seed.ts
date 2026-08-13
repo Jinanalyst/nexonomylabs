@@ -160,7 +160,8 @@ export const NEWS: NewsItem[] = [
       "The Federal Reserve kept its policy rate unchanged and struck a measured tone, saying it needs 'greater confidence' that disinflation is durable before easing.",
     content:
       "In its latest statement the committee emphasized data-dependence, noting that while headline inflation has moderated, services prices remain sticky. Markets read the tone as mildly dovish, with the front end of the curve rallying modestly.",
-    image_url: "https://picsum.photos/seed/fed-rates/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Marriner_S._Eccles_Federal_Reserve_Board_Building.jpg/960px-Marriner_S._Eccles_Federal_Reserve_Board_Building.jpg",
     source: "Reuters",
     source_url: "https://www.reuters.com/markets/",
     market: "macro",
@@ -175,7 +176,8 @@ export const NEWS: NewsItem[] = [
       "Shares of the chip giant pushed higher after management reiterated a robust backlog for AI accelerators heading into the next fiscal year.",
     content:
       "Analysts pointed to continued hyperscaler capex as the primary driver, though some cautioned that expectations are now priced for perfection.",
-    image_url: "https://picsum.photos/seed/nvda/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/EFTA00000440_-_Cluttered_server_room_with_numerous_cables_equipment_and_racks_arranged_on_a_white_wall.jpg/960px-EFTA00000440_-_Cluttered_server_room_with_numerous_cables_equipment_and_racks_arranged_on_a_white_wall.jpg",
     source: "Bloomberg",
     source_url: "https://www.bloomberg.com/markets",
     market: "us-stocks",
@@ -190,7 +192,8 @@ export const NEWS: NewsItem[] = [
       "Korea's benchmark index edged lower on net foreign selling, led by large-cap memory names amid concerns over the pace of the DRAM upcycle.",
     content:
       "Institutional flows were mixed. Battery and shipbuilding names outperformed, cushioning the index decline.",
-    image_url: "https://picsum.photos/seed/kospi/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Skyline_of_Yeouido%2C_a_prominent_finance_district_in_Seoul.jpg/960px-Skyline_of_Yeouido%2C_a_prominent_finance_district_in_Seoul.jpg",
     source: "Yonhap",
     source_url: "https://en.yna.co.kr/",
     market: "korea-stocks",
@@ -205,7 +208,8 @@ export const NEWS: NewsItem[] = [
       "Spot Bitcoin funds saw their strongest week of net creations in months, helping the largest cryptocurrency stabilize above a key psychological level.",
     content:
       "On-chain metrics show long-term holder supply near record highs, while exchange balances continue a multi-year decline.",
-    image_url: "https://picsum.photos/seed/btc-etf/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/25_BTC_Gold_Casascius_coin_2011_by_Gage_Skidmore.jpg/960px-25_BTC_Gold_Casascius_coin_2011_by_Gage_Skidmore.jpg",
     source: "CoinDesk",
     source_url: "https://www.coindesk.com/",
     market: "crypto",
@@ -220,7 +224,8 @@ export const NEWS: NewsItem[] = [
       "The greenback eased broadly as a softer-than-expected payrolls print revived expectations for a more accommodative policy path.",
     content:
       "EUR and JPY led gains among the majors. Rate-sensitive currencies responded to the move lower in short-dated yields.",
-    image_url: "https://picsum.photos/seed/dxy/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Hundred_dollar_bill_01.jpg/960px-Hundred_dollar_bill_01.jpg",
     source: "Financial Times",
     source_url: "https://www.ft.com/currencies",
     market: "fx",
@@ -235,7 +240,8 @@ export const NEWS: NewsItem[] = [
       "Bullion extended its advance to a new all-time high, supported by falling real rates and steady central-bank buying.",
     content:
       "Analysts note that the move has been orderly, with positioning still short of the extremes seen in prior blow-off tops.",
-    image_url: "https://picsum.photos/seed/gold/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Gold_bullion_bars.jpg/960px-Gold_bullion_bars.jpg",
     source: "Bloomberg",
     source_url: "https://www.bloomberg.com/markets/commodities",
     market: "commodities",
@@ -250,7 +256,8 @@ export const NEWS: NewsItem[] = [
       "Benchmark yields held in a tight range as investors awaited a heavy slate of government debt auctions later in the week.",
     content:
       "Dealers flagged reasonable demand expectations, though term premium remains a topic of debate among strategists.",
-    image_url: "https://picsum.photos/seed/ust10/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Us-treasury-building.jpg/960px-Us-treasury-building.jpg",
     source: "Reuters",
     source_url: "https://www.reuters.com/markets/rates-bonds/",
     market: "bonds",
@@ -265,7 +272,8 @@ export const NEWS: NewsItem[] = [
       "A cluster of megacap results topped estimates on the quarter, yet cautious outlooks on ad spend and cloud margins tempered the reaction.",
     content:
       "The dispersion in guidance underscored how uneven the current cycle has been across business lines.",
-    image_url: "https://picsum.photos/seed/bigtech/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Wall_Street_-_New_York_Stock_Exchange.jpg/960px-Wall_Street_-_New_York_Stock_Exchange.jpg",
     source: "CNBC",
     source_url: "https://www.cnbc.com/markets/",
     market: "us-stocks",
@@ -280,7 +288,8 @@ export const NEWS: NewsItem[] = [
       "Crude firmed after data showed a larger-than-expected draw in commercial stockpiles, though demand signals remain mixed.",
     content:
       "Refining margins and product cracks will be the key tells for the direction of the next move, traders said.",
-    image_url: "https://picsum.photos/seed/oil/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Oil_platform_P-51_%28Brazil%29.jpg/960px-Oil_platform_P-51_%28Brazil%29.jpg",
     source: "Reuters",
     source_url: "https://www.reuters.com/business/energy/",
     market: "commodities",
@@ -295,7 +304,7 @@ export const NEWS: NewsItem[] = [
       "The share of ETH locked in staking reached a new high, coinciding with a rebound in on-chain transaction volume.",
     content:
       "Layer-2 throughput continues to grow, shifting the composition of network fees over time.",
-    image_url: "https://picsum.photos/seed/eth/800/450",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/5/54/Ethereum_coin.jpg",
     source: "The Block",
     source_url: "https://www.theblock.co/",
     market: "crypto",
@@ -310,7 +319,8 @@ export const NEWS: NewsItem[] = [
       "The Korean won strengthened against the dollar as month-end exporter flows met a narrowing interest-rate differential.",
     content:
       "Traders are watching the pace of foreign equity flows for the next directional cue.",
-    image_url: "https://picsum.photos/seed/krw/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/50000_won_banknote.jpg/960px-50000_won_banknote.jpg",
     source: "Yonhap",
     source_url: "https://en.yna.co.kr/",
     market: "fx",
@@ -325,7 +335,8 @@ export const NEWS: NewsItem[] = [
       "A closely watched institution lifted its world GDP projection modestly, citing resilient household spending across major economies.",
     content:
       "Risks remain tilted to the downside from geopolitics and financial-condition tightening, the report noted.",
-    image_url: "https://picsum.photos/seed/growth/800/450",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/IMF_building_HR.jpg/960px-IMF_building_HR.jpg",
     source: "Financial Times",
     source_url: "https://www.ft.com/global-economy",
     market: "macro",
