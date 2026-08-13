@@ -14,6 +14,9 @@ import {
 // All content is educational / illustrative — no live quotes, no trade signals.
 // ---------------------------------------------------------------------------
 
+// index_value / index_change below are only the fallback shown if the live
+// Yahoo Finance fetch in src/lib/markets/live.ts fails — getMarkets() always
+// tries to overlay real current prices first.
 export const MARKETS: Market[] = [
   {
     slug: "us-stocks",

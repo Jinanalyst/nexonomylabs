@@ -17,6 +17,7 @@ import {
   NEWS,
   PROFILES,
 } from "./seed";
+import { fetchLiveMarketData } from "@/lib/markets/live";
 
 // ---------------------------------------------------------------------------
 // Read layer. Every function tries Supabase; if the project isn't configured
@@ -40,9 +41,18 @@ function profileById(id: string): Profile | undefined {
 
 export async function getMarkets(): Promise<Market[]> {
   const sb = await getServerSupabase();
-  if (!sb) return MARKETS;
-  const { data } = await sb.from("markets").select("*").order("name");
-  return data && data.length ? (data as Market[]) : MARKETS;
+  const [base, live] = await Promise.all([
+    (async () => {
+      if (!sb) return MARKETS;
+      const { data } = await sb.from("markets").select("*").order("name");
+      return data && data.length ? (data as Market[]) : MARKETS;
+    })(),
+    fetchLiveMarketData(),
+  ]);
+  return base.map((m) => {
+    const quote = live[m.slug as MarketCategory];
+    return quote ? { ...m, index_value: quote.value, index_change: quote.change } : m;
+  });
 }
 
 export async function getMarket(slug: string): Promise<Market | null> {

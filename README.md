@@ -75,6 +75,16 @@ follows · notifications`
 - **RLS**: everything is publicly readable; users may only write their own
   content; admins can moderate anything.
 
+## 📈 Live market data
+
+The market ticker (S&P 500, KOSPI, US 2Y/10Y yields, DXY, Gold, BTC) shows
+**real current prices**, fetched server-side from Yahoo Finance's public chart
+endpoint (`src/lib/markets/live.ts`) — no API key needed, refreshed roughly
+every 60 seconds. This is Yahoo's unofficial, undocumented endpoint, widely
+used for this purpose but not an officially supported API; if it ever gets
+rate-limited or blocked from a given host, each market silently falls back to
+its last known value in the `markets` table rather than breaking the UI.
+
 ## 📰 Live news (Finnhub)
 
 News starts as clean seed data, but the app can pull **real articles with
