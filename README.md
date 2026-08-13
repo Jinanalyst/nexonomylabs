@@ -100,9 +100,11 @@ images** from [Finnhub](https://finnhub.io)'s free news API:
 
 Finnhub's free tier only categorizes **general → Macro**, **forex → FX**,
 **crypto → Crypto**, and **mergers / major US tickers → US Stocks**. Korea
-Stocks, Bonds and Commodities have no equivalent free, image-bearing source
-today, so those stay curated via seed data or the manual "Publish news" form
-in Admin.
+Stocks, Bonds and Commodities have no equivalent free, image-bearing API, so
+those three are instead filled in from keyless RSS feeds (한국경제 증권,
+Investing.com bonds/commodities — see `src/lib/news/rss.ts`), no signup
+required. Between Finnhub and RSS, every market category now refreshes
+automatically.
 
 ### Automated refresh
 
@@ -111,13 +113,15 @@ needs to periodically call the ingestion endpoint, since that requires an
 always-on host. The endpoint itself already exists at
 `/api/cron/ingest-news` and does exactly what the admin button does.
 
-**On Vercel** (recommended): `vercel.json` already declares an hourly cron
-(`0 * * * *`) hitting that route. Add `CRON_SECRET` as an environment
-variable in your Vercel project — Vercel automatically sends it as a Bearer
-token when it calls the route, so nobody else can trigger it. Note: Vercel's
-Hobby (free) plan currently limits cron jobs to once per day; Pro plans allow
-arbitrary schedules — check your plan's current limits in the Vercel
-dashboard, as these change over time.
+**On Vercel** (recommended): `vercel.json` already declares a daily cron
+(`0 0 * * *`, matching the Hobby/free plan's once-per-day limit) hitting that
+route. Add `CRON_SECRET` **and `SUPABASE_SERVICE_ROLE_KEY`** as environment
+variables in your Vercel project — Vercel automatically sends `CRON_SECRET`
+as a Bearer token when it calls the route, so nobody else can trigger it. The
+service role key is required too: the cron request has no logged-in admin
+session, so without it the insert is rejected by the `admin write news` RLS
+policy. Pro plans allow more frequent schedules — check your plan's current
+limits in the Vercel dashboard, as these change over time.
 
 **Anywhere else**: point any scheduler (GitHub Actions on a cron trigger,
 a cron job on your own server, cron-job.org, etc.) at

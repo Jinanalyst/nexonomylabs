@@ -1,13 +1,21 @@
-import type { getServerSupabase } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchLiveNews } from "./finnhub";
-
-type SupabaseClient = NonNullable<Awaited<ReturnType<typeof getServerSupabase>>>;
+import { fetchRssNews } from "./rss";
 
 // Shared by the admin "Fetch latest news" button and the scheduled cron
-// route, so both go through one code path. Fetches live articles, skips
-// ones already stored (matched by original article URL), inserts the rest.
+// route, so both go through one code path. Fetches live articles from
+// every configured source (Finnhub for macro/fx/crypto/us-stocks, keyless
+// RSS feeds for korea-stocks/bonds/commodities), skips ones already stored
+// (matched by original article URL), inserts the rest.
 export async function ingestNewsInto(sb: SupabaseClient): Promise<number> {
-  const articles = await fetchLiveNews();
+  const [finnhub, rss] = await Promise.all([fetchLiveNews(), fetchRssNews()]);
+
+  const seen = new Set<string>();
+  const articles = [...finnhub, ...rss].filter((a) => {
+    if (seen.has(a.source_url)) return false;
+    seen.add(a.source_url);
+    return true;
+  });
   if (!articles.length) return 0;
 
   const { data: existing } = await sb.from("news").select("source_url");

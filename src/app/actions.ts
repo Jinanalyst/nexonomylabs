@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { CommentParentType, MarketCategory, Sentiment } from "@/lib/types";
-import { isNewsApiConfigured } from "@/lib/news/finnhub";
 import { ingestNewsInto } from "@/lib/news/ingest";
 import { getNews } from "@/lib/data/queries";
 import { NewsItem } from "@/lib/types";
@@ -266,11 +265,6 @@ export async function adminIngestNews(): Promise<Result & { inserted?: number }>
     .eq("id", user.id)
     .single();
   if (profile?.role !== "admin") return { error: "Admin only." };
-
-  if (!isNewsApiConfigured())
-    return {
-      error: "FINNHUB_API_KEY is not set. Add a free key to .env.local (see README).",
-    };
 
   let inserted: number;
   try {

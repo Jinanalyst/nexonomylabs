@@ -5,8 +5,8 @@ import { MarketCategory } from "@/lib/types";
 // Only "general", "forex", "crypto" and "merger" categories exist on
 // Finnhub's free news endpoint, plus per-symbol company news. That maps onto
 // macro / fx / crypto / us-stocks. Korea stocks, bonds and commodities have
-// no equivalent free, image-bearing source and stay curated via seed data
-// and the Admin news form.
+// no equivalent free, image-bearing source here — see ./rss.ts, which covers
+// those three via keyless RSS feeds instead.
 // ---------------------------------------------------------------------------
 
 const FINNHUB_BASE = "https://finnhub.io/api/v1";
