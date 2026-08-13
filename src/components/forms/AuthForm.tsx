@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signIn, signUp } from "@/app/actions";
+import GoogleButton from "@/components/forms/GoogleButton";
 
 const inputCls =
   "w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-sm outline-none placeholder:text-muted focus:border-accent/60";
@@ -36,7 +37,18 @@ export default function AuthForm({
           </div>
         )}
 
-        <form action={formAction} className="mt-5 space-y-3">
+        {configured && (
+          <div className="mt-5">
+            <GoogleButton />
+            <div className="my-4 flex items-center gap-3">
+              <div className="h-px flex-1 bg-line" />
+              <span className="text-xs text-muted">or</span>
+              <div className="h-px flex-1 bg-line" />
+            </div>
+          </div>
+        )}
+
+        <form action={formAction} className={configured ? "space-y-3" : "mt-5 space-y-3"}>
           {mode === "signup" && (
             <>
               <div>

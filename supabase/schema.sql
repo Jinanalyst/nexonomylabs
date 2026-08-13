@@ -139,17 +139,38 @@ create table if not exists notifications (
 -- Triggers: keep denormalized counts in sync
 -- ============================================================================
 
--- New auth user -> profile row (uses metadata from signUp)
+-- New auth user -> profile row.
+-- Handles both email/password signUp (username/display_name in metadata) and
+-- OAuth providers like Google (full_name/name/avatar_url/picture instead),
+-- and guards against username collisions between the two paths.
 create or replace function handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  base_username text;
+  final_username text;
+  suffix int := 0;
 begin
-  insert into profiles (id, username, display_name)
+  base_username := coalesce(
+    nullif(new.raw_user_meta_data->>'username', ''),
+    split_part(new.email, '@', 1)
+  );
+  final_username := base_username;
+  while exists (select 1 from profiles where username = final_username) loop
+    suffix := suffix + 1;
+    final_username := base_username || suffix::text;
+  end loop;
+
+  insert into profiles (id, username, display_name, avatar_url)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'username', split_part(new.email,'@',1)),
-    coalesce(new.raw_user_meta_data->>'display_name',
-             new.raw_user_meta_data->>'username',
-             split_part(new.email,'@',1))
+    final_username,
+    coalesce(
+      nullif(new.raw_user_meta_data->>'display_name', ''),
+      nullif(new.raw_user_meta_data->>'full_name', ''),
+      nullif(new.raw_user_meta_data->>'name', ''),
+      base_username
+    ),
+    coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture')
   )
   on conflict (id) do nothing;
   return new;
