@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/* Dark is applied via a `.dark` class on <html> (set by the theme script). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---- Light palette (default :root) ------------------------------------- */
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --panel: #eef2f7;
+  --line: #e3e8ef;
+  --fg: #0e1726;
+  --muted: #5a6675;
+  --accent: #2f6bff;
+  --teal: #0d9488;
+  --bull: #0ea66f;
+  --bear: #dc3546;
+  --neutral: #c58a00;
+}
+
+/* ---- Dark palette (finance terminal) ----------------------------------- */
+.dark {
+  --bg: #0a0e15;
+  --surface: #111722;
+  --panel: #161d2b;
+  --line: #232d3d;
+  --fg: #e6edf5;
+  --muted: #8b98ab;
+  --accent: #4d82ff;
+  --teal: #2dd4bf;
+  --bull: #17c784;
+  --bear: #f0616d;
+  --neutral: #f0b90b;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-teal: var(--teal);
+  --color-bull: var(--bull);
+  --color-bear: var(--bear);
+  --color-neutral: var(--neutral);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numeric / ticker text */
+.tnum {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Reusable surface card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.hover-card {
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.hover-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+/* Thin custom scrollbar for market rails */
+.thin-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+/* Prose for long-form analysis/news bodies */
+.prose-body {
+  line-height: 1.75;
+  white-space: pre-wrap;
+  color: var(--fg);
+}
+.prose-body p {
+  margin-bottom: 1rem;
+}
+
+@keyframes fadeup {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fadeup {
+  animation: fadeup 0.35s ease both;
+}
