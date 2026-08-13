@@ -5,8 +5,6 @@ import { redirect } from "next/navigation";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { CommentParentType, MarketCategory, Sentiment } from "@/lib/types";
 import { ingestNewsInto } from "@/lib/news/ingest";
-import { getNews } from "@/lib/data/queries";
-import { NewsItem } from "@/lib/types";
 
 const DEMO = {
   error:
@@ -49,16 +47,6 @@ export async function signOut() {
   const sb = await getServerSupabase();
   if (sb) await sb.auth.signOut();
   redirect("/");
-}
-
-// ---- News pagination --------------------------------------------------------
-
-export async function loadMoreNews(
-  market: MarketCategory | undefined,
-  offset: number,
-  limit = 9,
-): Promise<NewsItem[]> {
-  return getNews({ market, offset, limit });
 }
 
 // ---- Comments -------------------------------------------------------------
