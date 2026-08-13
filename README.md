@@ -104,6 +104,31 @@ Stocks, Bonds and Commodities have no equivalent free, image-bearing source
 today, so those stay curated via seed data or the manual "Publish news" form
 in Admin.
 
+### Automated refresh
+
+News does **not** refresh itself just by running `npm run dev` — a scheduler
+needs to periodically call the ingestion endpoint, since that requires an
+always-on host. The endpoint itself already exists at
+`/api/cron/ingest-news` and does exactly what the admin button does.
+
+**On Vercel** (recommended): `vercel.json` already declares an hourly cron
+(`0 * * * *`) hitting that route. Add `CRON_SECRET` as an environment
+variable in your Vercel project — Vercel automatically sends it as a Bearer
+token when it calls the route, so nobody else can trigger it. Note: Vercel's
+Hobby (free) plan currently limits cron jobs to once per day; Pro plans allow
+arbitrary schedules — check your plan's current limits in the Vercel
+dashboard, as these change over time.
+
+**Anywhere else**: point any scheduler (GitHub Actions on a cron trigger,
+a cron job on your own server, cron-job.org, etc.) at
+`GET https://your-domain.com/api/cron/ingest-news` with header
+`Authorization: Bearer <CRON_SECRET>`, on whatever interval you like.
+
+The news list page itself also supports **pagination** — it loads 9 articles
+at a time with a "Load more" button that appends older articles in place
+(no page navigation, so you never lose your scroll position or get redirected
+away from what you were reading).
+
 ## 🛠 Tech
 
 Next.js 16 (App Router, Server Actions) · React 19 · TypeScript · Tailwind CSS v4

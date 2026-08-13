@@ -65,17 +65,23 @@ export async function getMarket(slug: string): Promise<Market | null> {
 export async function getNews(opts: {
   market?: MarketCategory;
   limit?: number;
+  offset?: number;
 } = {}): Promise<NewsItem[]> {
   const sb = await getServerSupabase();
   if (!sb) {
     let items = [...NEWS].sort(byNewest);
     if (opts.market) items = items.filter((n) => n.market === opts.market);
+    if (opts.offset) items = items.slice(opts.offset);
     if (opts.limit) items = items.slice(0, opts.limit);
     return items;
   }
   let q = sb.from("news").select("*").order("published_at", { ascending: false });
   if (opts.market) q = q.eq("market", opts.market);
-  if (opts.limit) q = q.limit(opts.limit);
+  if (opts.offset !== undefined && opts.limit !== undefined) {
+    q = q.range(opts.offset, opts.offset + opts.limit - 1);
+  } else if (opts.limit) {
+    q = q.limit(opts.limit);
+  }
   const { data } = await q;
   return (data as NewsItem[]) ?? [];
 }

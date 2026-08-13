@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { CommentParentType, MarketCategory, Sentiment } from "@/lib/types";
-import { fetchLiveNews, isNewsApiConfigured } from "@/lib/news/finnhub";
+import { isNewsApiConfigured } from "@/lib/news/finnhub";
+import { ingestNewsInto } from "@/lib/news/ingest";
+import { getNews } from "@/lib/data/queries";
+import { NewsItem } from "@/lib/types";
 
 const DEMO = {
   error:
@@ -47,6 +50,16 @@ export async function signOut() {
   const sb = await getServerSupabase();
   if (sb) await sb.auth.signOut();
   redirect("/");
+}
+
+// ---- News pagination --------------------------------------------------------
+
+export async function loadMoreNews(
+  market: MarketCategory | undefined,
+  offset: number,
+  limit = 9,
+): Promise<NewsItem[]> {
+  return getNews({ market, offset, limit });
 }
 
 // ---- Comments -------------------------------------------------------------
@@ -259,33 +272,17 @@ export async function adminIngestNews(): Promise<Result & { inserted?: number }>
       error: "FINNHUB_API_KEY is not set. Add a free key to .env.local (see README).",
     };
 
-  const articles = await fetchLiveNews();
-  if (!articles.length)
-    return { error: "No articles fetched — check the API key or try again shortly." };
-
-  const { data: existing } = await sb.from("news").select("source_url");
-  const existingUrls = new Set((existing ?? []).map((n) => n.source_url));
-  const fresh = articles.filter((a) => !existingUrls.has(a.source_url));
-
-  if (!fresh.length) return { ok: true, inserted: 0 };
-
-  const { error } = await sb.from("news").insert(
-    fresh.map((a) => ({
-      title: a.title,
-      summary: a.summary,
-      image_url: a.image_url,
-      source: a.source,
-      source_url: a.source_url,
-      market: a.market,
-      published_at: a.published_at,
-    })),
-  );
-  if (error) return { error: error.message };
+  let inserted: number;
+  try {
+    inserted = await ingestNewsInto(sb);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to ingest news." };
+  }
 
   revalidatePath("/news");
   revalidatePath("/admin");
   revalidatePath("/");
-  return { ok: true, inserted: fresh.length };
+  return { ok: true, inserted };
 }
 
 export async function adminDeleteComment(id: string): Promise<Result> {
